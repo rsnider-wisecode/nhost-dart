@@ -32,9 +32,9 @@ class NhostAuthClient implements HasuraAuthClient {
     Duration? tokenRefreshInterval,
     http.Client? httpClient,
   })  : _apiClient = ApiClient(
-          Uri.parse(url),
-          httpClient: httpClient ?? http.Client(),
-        ),
+    Uri.parse(url),
+    httpClient: httpClient ?? http.Client(),
+  ),
         _session = session ?? UserSession(),
         _authStore = authStore ?? InMemoryAuthStore(),
         _tokenRefreshInterval = tokenRefreshInterval,
@@ -142,7 +142,7 @@ class NhostAuthClient implements HasuraAuthClient {
   void _onTokenChanged() {
     log.finest(
       'Calling token change callbacks, '
-      'jwt.hashCode=${identityHashCode(accessToken)}',
+          'jwt.hashCode=${identityHashCode(accessToken)}',
     );
     for (final tokenChangedFunction in _tokenChangedCallbacks) {
       tokenChangedFunction();
@@ -190,7 +190,7 @@ class NhostAuthClient implements HasuraAuthClient {
     log.finer('Attempting user registration');
 
     final headers =
-        turnstileResponse != null ? {'x-cf-turnstile-response': turnstileResponse} : null;
+    turnstileResponse != null ? {'x-cf-turnstile-response': turnstileResponse} : null;
     final includeRoleOptions =
         defaultRole != null || (roles != null && roles.isNotEmpty);
     final options = {
@@ -398,10 +398,10 @@ class NhostAuthClient implements HasuraAuthClient {
   /// Throws an [NhostException] if sign in fails.
   @override
   Future<void> signInAnonymous(
-    String? displayName,
-    String? locale,
-    Map<String, dynamic>? metadata,
-  ) async {
+      String? displayName,
+      String? locale,
+      Map<String, dynamic>? metadata,
+      ) async {
     log.finer('Attempting sign in anonymously');
 
     AuthResponse? res;
@@ -425,6 +425,15 @@ class NhostAuthClient implements HasuraAuthClient {
       log.finer('Sign in anonymously successful');
       await setSession(res.session!);
     }
+  }
+
+  @override
+  Future<void> deanonymize(DeanonymizeOptions options) async {
+    await _apiClient.post<String>(
+      '/user/deanonymize',
+      jsonBody: options.toJson(),
+      headers: _session.authenticationHeaders,
+    );
   }
 
   /// Authenticates a user using a [phoneNumber].
@@ -467,9 +476,9 @@ class NhostAuthClient implements HasuraAuthClient {
 
   @override
   Future<AuthResponse> completeSmsPasswordlessSignIn(
-    String phoneNumber,
-    String otp,
-  ) async {
+      String phoneNumber,
+      String otp,
+      ) async {
     final res = await _apiClient.post(
       '/signin/passwordless/sms/otp',
       jsonBody: {'phoneNumber': phoneNumber, 'otp': otp},
@@ -856,7 +865,7 @@ class NhostAuthClient implements HasuraAuthClient {
 
     log.finest(
       'Setting session, accessToken.hashCode='
-      '${identityHashCode(session.accessToken)}',
+          '${identityHashCode(session.accessToken)}',
     );
 
     final previouslyAuthenticated = authenticationState;
@@ -883,7 +892,7 @@ class NhostAuthClient implements HasuraAuthClient {
     log.finest('Creating token refresh timer, duration=$refreshTimerDuration');
     _tokenRefreshTimer = Timer(
       refreshTimerDuration,
-      () {
+          () {
         log.finest('Refresh timer elapsed');
         _refreshSession();
       },
@@ -942,7 +951,7 @@ class NhostAuthClient implements HasuraAuthClient {
     }.toString();
   }
 
-  //#endregion
+//#endregion
 }
 
 class AuthServiceException implements NhostException {
